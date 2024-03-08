@@ -3,7 +3,7 @@ ARG COMMIT=""
 ARG VERSION=""
 
 # Build Geth in a stock Go builder container
-FROM golang:1.21.3-bullseye as builder
+FROM --platform=$BUILDPLATFORM golang:1.21.3-bullseye as builder
 
 RUN apt update && apt install -y git
 
@@ -13,10 +13,10 @@ COPY go.sum /go-ethereum/
 RUN cd /go-ethereum && go mod download
 
 ADD . /go-ethereum
-RUN cd /go-ethereum && go run build/ci.go install -static ./cmd/geth
+RUN cd /go-ethereum && GOOS=$TARGETOS GOARCH=$TARGETARCH go run build/ci.go install -static ./cmd/geth
 
 # Pull Geth into a second stage deploy debian container
-FROM debian:11.9-slim
+FROM --platform=$TARGETPLATFORM debian:11.9-slim
 
 COPY --from=builder /go-ethereum/build/bin/geth /usr/local/bin/
 
