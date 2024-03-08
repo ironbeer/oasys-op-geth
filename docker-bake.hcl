@@ -48,7 +48,6 @@ target "op-geth" {
     COMMIT = "${GIT_COMMIT}"
     VERSION = "${OP_GETH_VERSION}"
   }
-  target = "op-node-target"
   platforms = split(",", PLATFORMS)
   tags = [for tag in split(",", IMAGE_TAGS) : "${REGISTRY}/${REPOSITORY}/op-node:${tag}"]
 }
