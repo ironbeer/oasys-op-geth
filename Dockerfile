@@ -1,5 +1,5 @@
 # Build Geth in a stock Go builder container
-FROM --platform=$BUILDPLATFORM golang:1.21.3-bullseye as builder
+FROM --platform=$BUILDPLATFORM golang:1.21.3-bullseye as base-builder
 
 # automatically set by buildkit, can be changed with --platform flag
 # Note: This args must not be placed above `FROM`.
@@ -19,6 +19,9 @@ COPY go.sum /go-ethereum/
 RUN cd /go-ethereum && go mod download
 
 ADD . /go-ethereum
+
+FROM --platform=$BUILDPLATFORM base-builder as builder
+
 RUN cd /go-ethereum && GOOS=$TARGETOS GOARCH=$TARGETARCH go run build/ci.go install -static ./cmd/geth
 
 # Pull Geth into a second stage deploy debian container
