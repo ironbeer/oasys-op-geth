@@ -49,5 +49,5 @@ target "op-geth" {
     VERSION = "${OP_GETH_VERSION}"
   }
   platforms = split(",", PLATFORMS)
-  tags = [for tag in split(",", IMAGE_TAGS) : "${REGISTRY}/${REPOSITORY}/op-node:${tag}"]
+  tags = [for tag in split(",", IMAGE_TAGS) : "${REGISTRY}/${REPOSITORY}/op-geth:${tag}"]
 }
