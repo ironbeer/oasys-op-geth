@@ -9,11 +9,6 @@ ARG COMMIT=""
 ARG VERSION=""
 ARG BUILDNUM=""
 
-# automatically set by buildkit, can be changed with --platform flag
-ARG TARGETOS
-ARG TARGETARCH
-ARG TARGETVARIANT
-
 RUN apt update && apt install -y git
 
 # Get dependencies - will also be cached if we won't change go.mod/go.sum
