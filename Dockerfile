@@ -24,7 +24,7 @@ RUN cd /go-ethereum && go mod download
 ADD . /go-ethereum
 RUN cd /go-ethereum && \
       GOOS=$TARGETOS GOARCH=$TARGETARCH GOARM="$(echo $TARGETVARIANT | cut -c2-)" \
-      go run build/ci.go install -static ./cmd/geth
+      go run build/ci.go install -static -arch $TARGETARCH ./cmd/geth
 
 # Pull Geth into a second stage deploy debian container
 FROM --platform=$TARGETPLATFORM debian:11.9-slim
