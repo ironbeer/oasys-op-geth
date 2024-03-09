@@ -23,10 +23,8 @@ RUN cd /go-ethereum && go mod download
 
 ADD . /go-ethereum
 RUN cd /go-ethereum && \
-      if [ "$TARGETARCH" = "arm" ] && [ -n TARGETVARIANT ]; then \
-		export GOARM="${TARGETVARIANT//v}" \
-      fi \
-      GOOS=$TARGETOS GOARCH=$TARGETARCH go run build/ci.go install -static ./cmd/geth
+      GOOS=$TARGETOS GOARCH=$TARGETARCH GOARM="$(echo $TARGETVARIANT | cut -c2-)" \
+      go run build/ci.go install -static ./cmd/geth
 
 # Pull Geth into a second stage deploy debian container
 FROM --platform=$TARGETPLATFORM debian:11.9-slim
