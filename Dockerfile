@@ -2,7 +2,7 @@
 #       It will not be able to be referenced by RUN.
 
 # Build Geth in a stock Go builder container
-FROM --platform=$BUILDPLATFORM golang:1.21-alpine as builder
+FROM --platform=$BUILDPLATFORM golang:1.21.3-bullseye as builder
 
 # Support setting various labels on the final image
 ARG COMMIT=""
@@ -13,7 +13,7 @@ ARG BUILDNUM=""
 ARG TARGETOS
 ARG TARGETARCH
 
-RUN apk add --no-cache gcc musl-dev linux-headers git
+RUN apt update && apt install -y git
 
 # Get dependencies - will also be cached if we won't change go.mod/go.sum
 COPY go.mod /go-ethereum/
@@ -24,10 +24,14 @@ ADD . /go-ethereum
 RUN cd /go-ethereum && \
     GOOS=$TARGETOS GOARCH=$TARGETARCH go run build/ci.go install -static ./cmd/geth
 
-# Pull Geth into a second stage deploy alpine container
-FROM --platform=$TARGETPLATFORM alpine:latest
+# Pull Geth into a second stage deploy debian container
+FROM --platform=$TARGETPLATFORM debian:11.9-slim
 
-RUN apk add --no-cache ca-certificates
+RUN apt update && \
+    apt install -y ca-certificates && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
 COPY --from=builder /go-ethereum/build/bin/geth /usr/local/bin/
 
 EXPOSE 8545 8546 30303 30303/udp
