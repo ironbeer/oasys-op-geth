@@ -826,7 +826,7 @@ func (bc *BlockChain) setHeadBeyondRoot(head uint64, time uint64, root common.Ha
 	bc.futureBlocks.Purge()
 
 	// Clear safe block, finalized block if needed
-	if safe := bc.CurrentSafeBlock(); safe != nil && head < safe.Number.Uint64() {
+	if safe := bc.CurrentSafeBlock(); (safe != nil && head < safe.Number.Uint64()) || safe == nil {
 		log.Warn("SetHead invalidated safe block")
 		// Warning: This is dangerous, as it forces the safe block to be head block.
 		// This prevents op-node walk back to genesis block.
